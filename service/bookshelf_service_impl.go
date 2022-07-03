@@ -57,10 +57,10 @@ func (service *BookshelfServiceImpl) Create(book domain.Book) (web.WebResponse, 
 	}, nil
 }
 
-func (service *BookshelfServiceImpl) FindAll() web.WebResponse {
+func (service *BookshelfServiceImpl) FindAll(queryParam domain.QueryParam) web.WebResponse {
 	webResponse := web.WebResponse{
 		Status: "success",
-		Data:   web.WebResponseGetAll{Books: service.bookshelfRepository.FindAll()},
+		Data:   web.WebResponseGetAll{Books: service.bookshelfRepository.FindAll(queryParam)},
 	}
 	return webResponse
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"example.com/shelfbook-api/helper"
@@ -61,10 +62,33 @@ func (repository *BookshelfRepositoryImpl) Create(book domain.Book) (web.BookRes
 
 }
 
-func (repository *BookshelfRepositoryImpl) FindAll() []web.WebResponseGet {
+func (repository *BookshelfRepositoryImpl) FindAll(queryParam domain.QueryParam) []web.WebResponseGet {
 	tempBookShelfDB := []web.WebResponseGet{}
 	for _, br := range BookShelfDB {
-		tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+		if queryParam.NameParam != "" && strings.Contains(strings.ToLower(br.Name), strings.ToLower(queryParam.NameParam)) {
+			tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+		} else {
+			if queryParam.IsReading == nil && queryParam.IsFinished == nil && queryParam.NameParam == "" {
+				tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+			}
+		}
+		if queryParam.IsFinished != nil {
+			if *queryParam.IsFinished == true && br.Finished == true {
+				tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+			}
+			if *queryParam.IsFinished == false && br.Finished == false {
+				tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+			}
+		}
+
+		if queryParam.IsReading != nil {
+			if *queryParam.IsReading == true && br.Reading == true {
+				tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+			}
+			if *queryParam.IsReading == false && br.Reading == false {
+				tempBookShelfDB = append(tempBookShelfDB, web.WebResponseGet{BookId: br.Id, BookName: br.Name, BookPublisher: br.Publisher})
+			}
+		}
 	}
 	return tempBookShelfDB
 }

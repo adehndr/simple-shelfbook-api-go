@@ -7,7 +7,7 @@ import (
 
 type BookshelfRepository interface {
 	Create(book domain.Book) (web.BookResponse, error)
-	FindAll() []web.WebResponseGet
+	FindAll(queryParam domain.QueryParam) []web.WebResponseGet
 	FindById(bookId string) (web.BookResponse, error)
 	Update(bookId string, book domain.Book) (web.BookResponse, error)
 	Delete(bookId string) error

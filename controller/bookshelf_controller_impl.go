@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"example.com/shelfbook-api/helper"
 	"example.com/shelfbook-api/model/domain"
@@ -47,7 +48,27 @@ func (controller *BookShelfControllerImpl) Create(w http.ResponseWriter, r *http
 }
 
 func (controller *BookShelfControllerImpl) FindAll(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	webResponse := controller.service.FindAll()
+	nameQueryParam := r.URL.Query().Get("name")
+	var readingQueryParam *bool
+	if r.URL.Query().Get("reading") == "" {
+		readingQueryParam = nil
+	} else {
+		tempReadingQueryParam, _ := strconv.ParseBool(r.URL.Query().Get("reading"))
+		readingQueryParam = &tempReadingQueryParam
+	}
+	var finishedQueryParam *bool
+	if r.URL.Query().Get("finished") == "" {
+		finishedQueryParam = nil
+	} else {
+		tempFinishedQueryParam, _ := strconv.ParseBool(r.URL.Query().Get("finished"))
+		finishedQueryParam = &tempFinishedQueryParam
+	}
+	queryParam := domain.QueryParam{
+		NameParam:  nameQueryParam,
+		IsReading:  readingQueryParam,
+		IsFinished: finishedQueryParam,
+	}
+	webResponse := controller.service.FindAll(queryParam)
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	encoder := json.NewEncoder(w)
